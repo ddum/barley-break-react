@@ -23,8 +23,7 @@ class BoxGame extends Component {
   }
 
   render () {
-    console.log(this.props);
-    const { state, actions } = this.props;
+    const { steps, gameMap, actions } = this.props;
     return (
       <div className={classNames('bb', 'demo-card-square', 'mdl-card', 'mdl-shadow--2dp')}>
         <div className={classNames('mdl-card__title', 'mdl-color--indigo')}>
@@ -32,7 +31,7 @@ class BoxGame extends Component {
         </div>
         <div className="mdl-card__supporting-text">
           {
-            state.map.map(row =>
+            gameMap.map(row =>
               row.map(number =>
                 <BbCell number={number}/>
               )
@@ -41,7 +40,7 @@ class BoxGame extends Component {
         </div>
         <div className="mdl-card__actions mdl-card--border">
           <RestartButton actions={actions}/>
-          <BbSteps steps={state.steps}/>
+          <BbSteps steps={steps}/>
         </div>
         <div className="mdl-card__menu">
           <button className={classNames('mdl-button', 'mdl-button--icon', 'mdl-color-text--white')}>
@@ -63,7 +62,8 @@ class BoxGame extends Component {
 
 function mapState(state) {
   return {
-    state: state.barleyBreak
+    steps   : state.barleyBreak.steps,
+    gameMap : state.barleyBreak.game.map
   };
 }
 
