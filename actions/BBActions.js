@@ -9,6 +9,6 @@ export function restartGame() {
 export function clickKey(idKey) {
   return {
     type: types.CLICK_KEY,
-    idKey: idKey
+    idKey: types.ARR_KEY[idKey]
   };
 }

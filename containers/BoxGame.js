@@ -3,10 +3,12 @@ import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as BBActions from '../actions/BBActions';
+import * as types from '../constants/ActionTypes';
 
 import RestartButton from '../components/RestartButton';
 import BbSteps from '../components/BbSteps';
 import BbCell from '../components/BbCell';
+import BbStatus from '../components/BbStatus';
 
 class BoxGame extends Component {
   constructor(props) {
@@ -23,7 +25,7 @@ class BoxGame extends Component {
   }
 
   render () {
-    const { steps, gameMap, actions } = this.props;
+    const { steps, gameMap, gameEnd, actions } = this.props;
     return (
       <div className={classNames('bb', 'demo-card-square', 'mdl-card', 'mdl-shadow--2dp')}>
         <div className={classNames('mdl-card__title', 'mdl-color--indigo')}>
@@ -37,6 +39,7 @@ class BoxGame extends Component {
               )
             )
           }
+          { (gameEnd)? <BbStatus/> : ""}
         </div>
         <div className="mdl-card__actions mdl-card--border">
           <RestartButton actions={actions}/>
@@ -44,7 +47,9 @@ class BoxGame extends Component {
         </div>
         <div className="mdl-card__menu">
           <button className={classNames('mdl-button', 'mdl-button--icon', 'mdl-color-text--white')}>
-            <i className="material-icons">share</i>
+            <a href="https://github.com/ddum/barley-break-react">
+              <i className={classNames('material-icons', 'github')}></i>
+            </a>
           </button>
         </div>
       </div>
@@ -54,7 +59,7 @@ class BoxGame extends Component {
   handleKeyUp(e) {
     e.preventDefault();
     var idKey = e.which;
-    if([37, 38, 39, 40].findIndex(x => x == idKey) != -1){
+    if(typeof types.ARR_KEY[idKey] != 'undefined' && !this.props.gameEnd){
       this.props.actions.clickKey(idKey);
     }
   }
@@ -63,7 +68,8 @@ class BoxGame extends Component {
 function mapState(state) {
   return {
     steps   : state.barleyBreak.steps,
-    gameMap : state.barleyBreak.game.map
+    gameMap : state.barleyBreak.game.map,
+    gameEnd : state.barleyBreak.gameEnd,
   };
 }
 
