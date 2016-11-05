@@ -1,89 +1,82 @@
 import * as types from '../constants/ActionTypes';
 
-const initArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
-function arrayShuffle(array) {
-    let bufArr = array;
-    let counter = bufArr.length;
-    while (counter > 0) {
-        let index = Math.floor(Math.random() * counter);
-        counter--;
-
-        let temp = bufArr[counter];
-        bufArr[counter] = bufArr[index];
-        bufArr[index] = temp;
-    }
-    return bufArr;
+function arrayShuffle() {
+  let bufArr = Array.from({ length: 15 }, (v, k) => ++k);
+  let counter = bufArr.length;
+  while (counter > 0) {
+    let index = Math.floor(Math.random() * counter);
+    counter--;
+  
+    let temp = bufArr[counter];
+    bufArr[counter] = bufArr[index];
+    bufArr[index] = temp;
+  }
+  return bufArr;
 }
 
-function generateRandomMap(initArray) {
-  let shuffleInitArray = arrayShuffle(initArray);
+function generateRandomMap() {
+  let shuffleInitArray = arrayShuffle();
+  shuffleInitArray.push(0);
 
   return {
-        map: [
-              shuffleInitArray.slice(0, 4),
-              shuffleInitArray.slice(4, 8),
-              shuffleInitArray.slice(8, 12),
-              shuffleInitArray.slice(12, 15)
-            ],
-        xNull: 3,
-        yNull: 3
-      };
+    map: [
+      shuffleInitArray.slice(0, 4),
+      shuffleInitArray.slice(4, 8),
+      shuffleInitArray.slice(8, 12),
+      shuffleInitArray.slice(12, 16)
+    ],
+    xNull: 3,
+    yNull: 3
+  };
 }
 
-function checkMap(initArray, arrayMap) {
-  let i = 0;
-  let status = true;
+function checkMap(arrayMap) {
+  let bufArr = arrayMap[0].concat(arrayMap[1], arrayMap[2], arrayMap[3]);
+  bufArr.splice(15, 1);
 
-  if(arrayMap[3][3] !== 0) return false;
+  return bufArr.every((element, index) => element == ++index);
+}
 
-  console.log();
+function nextStepMap(arrayMap, action) {
+  let xNull   = arrayMap.xNull,
+      yNull   = arrayMap.yNull,
+      bufGame = arrayMap.map;
 
-  arrayMap.map(row =>
-    row.map(number =>{
-      if(number != initArray[i] && i != 15){
-        status =  false;
-      }
-      i++;
-    })
-  );
+  if(action.idKey == 'KEY_UP' && yNull != 3) { // стрелка вверх
+    bufGame[yNull][xNull] = bufGame[++yNull][xNull];
+  }else if(action.idKey == 'KEY_DOWN' && yNull !== 0){ // стрелка вниз
+    bufGame[yNull][xNull] = bufGame[--yNull][xNull];
+  }else if(action.idKey == 'KEY_LEFT' && xNull != 3){ // стрелка <-
+    bufGame[yNull][xNull] = bufGame[yNull][++xNull];
+  }else if(action.idKey == 'KEY_RIGHT' && xNull !== 0){ // стрелка ->
+    bufGame[yNull][xNull] = bufGame[yNull][--xNull];
+  }
+  bufGame[yNull][xNull] = 0;
 
-  return status;
+  return { map: bufGame, xNull, yNull };
 }
 
 const initialState = {
-  steps: 0,
-  game : generateRandomMap(initArray),
+  steps  : 0,
+  game   : generateRandomMap(),
   gameEnd: false
 };
 
 const barleyBreak = function (state = initialState, action) {
   switch (action.type) {
     case types.RESTART_GAME:
-      return Object.assign({}, initialState, { game : generateRandomMap(initArray) });
+      return Object.assign({}, initialState, {
+        game: generateRandomMap()
+      });
 
     case types.CLICK_KEY:
-      let bufGame = state.game;
+      let bufGame = nextStepMap(state.game, action);
 
-      if(action.idKey == 'KEY_UP' && bufGame.yNull != 3) { // стрелка вверх
-        bufGame.map[bufGame.yNull][bufGame.xNull] = bufGame.map[++bufGame.yNull][bufGame.xNull];
-        ++state.steps;
-      }else if(action.idKey == 'KEY_DOWN' && bufGame.yNull !== 0){ // стрелка вниз
-        bufGame.map[bufGame.yNull][bufGame.xNull] = bufGame.map[--bufGame.yNull][bufGame.xNull];
-        ++state.steps;
-      }else if(action.idKey == 'KEY_LEFT' && bufGame.xNull != 3){ // стрелка <-
-        bufGame.map[bufGame.yNull][bufGame.xNull] = bufGame.map[bufGame.yNull][++bufGame.xNull];
-        ++state.steps;
-      }else if(action.idKey == 'KEY_RIGHT' && bufGame.xNull !== 0){ // стрелка ->
-        bufGame.map[bufGame.yNull][bufGame.xNull] = bufGame.map[bufGame.yNull][--bufGame.xNull];
-        ++state.steps;
-      }
-      bufGame.map[bufGame.yNull][bufGame.xNull] = 0;
-      return {
-        steps: state.steps,
-        game : bufGame,
-        gameEnd: checkMap(initArray, bufGame.map)
-      };
+      return Object.assign({}, state, {
+        steps  : state.steps + 1,
+        game   : bufGame,
+        gameEnd: checkMap(bufGame.map)
+      });
 
     default:
       return state;

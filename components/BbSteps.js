@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const BbSteps = ({ steps }) => (
-      <span className="bb__steps">{steps}</span>
+  <span className="bb__steps">{steps}</span>
 );
 
 BbSteps.propTypes = {

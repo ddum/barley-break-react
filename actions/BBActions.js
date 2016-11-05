@@ -8,7 +8,7 @@ export function restartGame() {
 
 export function clickKey(idKey) {
   return {
-    type: types.CLICK_KEY,
+    type : types.CLICK_KEY,
     idKey: types.ARR_KEY[idKey]
   };
 }

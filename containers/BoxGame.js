@@ -1,14 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import classNames from 'classnames';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import classNames                      from 'classnames';
+import { connect }                     from 'react-redux';
+import { bindActionCreators }          from 'redux';
+
 import * as BBActions from '../actions/BBActions';
-import * as types from '../constants/ActionTypes';
+import * as types     from '../constants/ActionTypes';
 
 import RestartButton from '../components/RestartButton';
-import BbSteps from '../components/BbSteps';
-import BbCell from '../components/BbCell';
-import BbStatus from '../components/BbStatus';
+import BbSteps       from '../components/BbSteps';
+import BbCell        from '../components/BbCell';
+import BbStatus      from '../components/BbStatus';
 
 class BoxGame extends Component {
   constructor(props) {
@@ -58,7 +59,7 @@ class BoxGame extends Component {
 
   handleKeyUp(e) {
     e.preventDefault();
-    var idKey = e.which;
+    let idKey = e.which;
     if(typeof types.ARR_KEY[idKey] != 'undefined' && !this.props.gameEnd){
       this.props.actions.clickKey(idKey);
     }
